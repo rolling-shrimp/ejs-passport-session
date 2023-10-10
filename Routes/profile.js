@@ -1,5 +1,5 @@
 const router = require("express").Router();
-const con = require("mysql");
+const con = require("../mysql");
 const AuthOrNot = (req, res, next) => {
   if (!req.isAuthenticated()) {
     req.session.returnTo = req.originalUrl;
@@ -22,14 +22,20 @@ router.get("/post", AuthOrNot, (req, res) => {
   console.log(userInfor);
   res.render("post.ejs", { user: req.user, userID: userInfor });
 });
-router.post("/post", AuthOrNot, async (req, res) => {
-  try {
-    let theSthff = await con.query("insert into post() values(?,?,?)", []);
-    req.flash("success_msg", "insert data success");
-  } catch (e) {
-    console.log(e);
-    req.flash("err_msg", "error occured while fetching the data");
-  }
+router.post("/post", AuthOrNot, (req, res) => {
+  con.query(
+    "insert into posts(title,content) values(?,?)",
+    [req.body.title, req.body.content],
+    (err, row) => {
+      if (err) {
+        console.log(err);
+        req.flash("err_msg", "error occured while fetching the data");
+      }
+      console.log("insert data success");
+
+      res.status(200).redirect("/profile");
+    }
+  );
 });
 
 module.exports = router;

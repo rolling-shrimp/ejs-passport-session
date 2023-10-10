@@ -3,14 +3,12 @@ const passport = require("passport");
 const bcrypt = require("bcrypt");
 const con = require("../mysql");
 const loggingout = (req, res, next) => {
-  req.logout(function (err) {
-    if (err) {
-      return next(err);
-    }
-    res.redirect("/");
-  });
+  req.logout();
+  res.redirect("/");
+  next();
 };
 router.get("/login", (req, res) => {
+  console.log(req.session);
   res.render("login.ejs");
 });
 router.get(
@@ -75,8 +73,9 @@ router.post(
     console.log(req.session);
     console.log("from the post request of /auth/login " + req.session.returnTo);
     if (req.session.returnTo) {
-      let newpath = req.session.returnTo;
+      var newpath = req.session.returnTo;
       req.session.returnTo = "";
+      console.log(newpath);
       res.redirect(newpath);
     } else {
       res.redirect("/profile");

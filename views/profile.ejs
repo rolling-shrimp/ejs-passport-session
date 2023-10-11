@@ -7,4 +7,28 @@
   <body>
     <%- include ("partials/nav") %>
     <h1>Welcome to the user page.</h1>
+    <div>
+      <% if (postdata.length>0){%>
+        
+        
+        
+        <% for(let i =0;i<postdata.length;i++){ %> 
+        <div>
+       <p><%=postdata[i].title  %>  </p>
+       <p><%=postdata[i].content  %>  </p>
+       <p><%=postdata[i].date  %>  </p>
+    
+        </div>
+    
+      <% }  %>  
+        
+        
+        
+        <%} %>
+
+
+
+
+
+    </div>
 </html>

@@ -12,11 +12,29 @@ const AuthOrNot = (req, res, next) => {
     next();
   }
 };
-router.get("/", AuthOrNot, (req, res) => {
+router.get("/", AuthOrNot, async (req, res) => {
   let userInfor = req.user.id;
   console.log(userInfor);
-  res.render("profile.ejs", { user: req.user, userID: userInfor });
+  console.log(req.user);
+  con.query(
+    "select * from posts where author = ?",
+    [req.user.id],
+    (err, row) => {
+      if (err) {
+        console.log(err);
+        req.flash("err_msg", "error occured");
+      }
+      console.log(row);
+
+      res.render("profile.ejs", {
+        user: req.user,
+        userID: userInfor,
+        postdata: row,
+      });
+    }
+  );
 });
+
 router.get("/post", AuthOrNot, (req, res) => {
   let userInfor = req.user.id;
   console.log(userInfor);
@@ -24,8 +42,8 @@ router.get("/post", AuthOrNot, (req, res) => {
 });
 router.post("/post", AuthOrNot, (req, res) => {
   con.query(
-    "insert into posts(title,content) values(?,?)",
-    [req.body.title, req.body.content],
+    "insert into posts(title,content,author) values(?,?,?)",
+    [req.body.title, req.body.content, req.user.id],
     (err, row) => {
       if (err) {
         console.log(err);
